@@ -142,3 +142,10 @@ class BaglansykSerializer(serializers.ModelSerializer):
         model = Baglansyk
 
         fields = ['id', 'pairname', 'users', 'logroles']
+
+class MyuserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+        
+

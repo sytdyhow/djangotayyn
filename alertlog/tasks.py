@@ -126,6 +126,7 @@ def process_row(row):
     
     
     
+    
 def postdata(hostname,severity,facility,application,message,timestamp,role, text_message,user_id):
     print("postdata, gecdi")
     #usersss=[1,2]

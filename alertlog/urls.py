@@ -1,7 +1,7 @@
 from alertlog import views
 from django.urls import path , include
 from rest_framework import routers
-from .views import Pairlist, SystemsViewSet, UserRegistrationView, BaglansykView,UserdataRegistrationView,UsersSystemViewSet,UsersRoleViewSet, RolesViewSet,UserViewSet,SystemsRolesViewSet
+from .views import MyUsernameViewset, Pairlist, SystemsViewSet, UserRegistrationView, BaglansykView,UserdataRegistrationView,UsersSystemViewSet,UsersRoleViewSet, RolesViewSet,UserViewSet,SystemsRolesViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
  
@@ -19,6 +19,8 @@ router.register(r'data', UserdataRegistrationView)
 router.register(r'adduser', UserRegistrationView)  #  add user
 router.register(r'systemrole', SystemsRolesViewSet,basename='systemrole')   # systemleri we role hemmesini gaytarya
 router.register(r'pairlist', Pairlist) 
+router.register(r'myusername',MyUsernameViewset)
+# router.register(r'getuserrule',getUserRules)
 #router.register('filter',views.FilterLogsViewSet)
 
 urlpatterns = [
@@ -30,6 +32,8 @@ urlpatterns = [
     path('logupdate/',views.LogUpdateView.as_view(), name = "log -update"), # birncae loglary update etyan
     path('rolespost/',views.create_pair),
     path('pair/', views.get_pair_by_id),
-    path('mytest/', views.mytest),
+
+    
+
    
 ]

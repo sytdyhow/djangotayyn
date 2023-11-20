@@ -552,19 +552,13 @@ class Pairlist(ModelViewSet):
     serializer_class = PairsListSerializer2
     
      
-def mytest(request):
-    role_id = request.GET.get('role_id')
-    user_id = request.GET.get('user_id')
+class MyUsernameViewset(ModelViewSet):
     
-    # data = Baglansyk.objects.filter(logroles = role_id).values("users")
-   # data = list(Baglansyk.objects.filter(logroles__id=role_id).values_list("users", flat=True))
+    queryset= User.objects.filter()
+    serializer_class = MyuserSerializer
     
-    rol_id= Logroles.objects.get(id = 2).id
-    users_id = list(Baglansyk.objects.filter(logroles__id=rol_id).values_list("users", flat=True))
-    
-    
-    print(rol_id,"      ok   ")
-    
-    print(users_id)
-    
-    return HttpResponse("hello ")
+  
+    def get_queryset(self):
+        queryset = User.objects.filter(id = self.request.user.id)
+        return queryset
+
