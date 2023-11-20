@@ -124,7 +124,12 @@ class TodoListApiView(APIView):
 
 
 class CountLogs(APIView):
-    def get(self, request):        
+    def get(self, request):   
+        
+        origin = request.META.get('HTTP_ORIGIN')
+        method = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
+        headers = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS')
+             
         today = datetime.datetime.now().date()
         today1 = date.today()
         last_month = today - timedelta(days=30)         
@@ -208,6 +213,7 @@ class CountLogs(APIView):
 class FilterLogsViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = AllFilterLogSerializer
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     
     queryset = Filterlog.objects.all().order_by('-timestamp')
 
@@ -299,11 +305,13 @@ class UserViewSet(viewsets.ModelViewSet):
     
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
 
 
 class SystemsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Systems.objects.all()
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     serializer_class = SystemsSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -330,6 +338,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 class UsersSystemViewSet(viewsets.ModelViewSet):
     queryset = UsersSystem.objects.all()
     serializer_class = SystemsSerializer
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     basename = 'userssystem'  # basename'i belirtin
 
     def get_queryset(self):
@@ -347,6 +356,7 @@ class UsersSystemViewSet(viewsets.ModelViewSet):
 class UsersRoleViewSet(viewsets.ModelViewSet):
     queryset = UsersRole.objects.all()
     serializer_class = RoleSerializer
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     basename = 'usersrole'
 
     def get_queryset(self):
@@ -358,12 +368,14 @@ class UsersRoleViewSet(viewsets.ModelViewSet):
 class RolesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = Rule.objects.all()
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     serializer_class = RoleSerializer
     
 
 class UserRegistrationView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     serializer_class = UserSerializer
     
    
@@ -440,13 +452,12 @@ class SystemsRolesViewSet(viewsets.ViewSet):
     #        duzetmeli
 class TestApivew(APIView):
     def get(self, request):
+        origin = request.META.get('HTTP_ORIGIN')
+        method = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
+        headers = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS')
         all_users = User.objects.all()
-
-    
-
         users_data = []
-
-        
+   
 
         for user in all_users:
 
@@ -476,7 +487,7 @@ class TestApivew(APIView):
         return Response(users_data)
     
 class UserdataRegistrationView(viewsets.ModelViewSet):
-
+    http_method_names = ['get', 'put','post', 'patch', 'head', 'options', 'trace', 'delete',]
     queryset = User.objects.all()
 
     serializer_class = UserdataSerializer
@@ -493,6 +504,9 @@ class BaglansykView(viewsets.ModelViewSet):
 @csrf_exempt
 def create_pair(request):
     if request.method == 'POST':
+        origin = request.META.get('HTTP_ORIGIN')
+        method = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
+        headers = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS')
         data = JSONParser().parse(request)
         pairname = data.get('pairname')
         user_ids = data.get('users')  # Assuming you receive a list of user IDs
@@ -514,8 +528,12 @@ def create_pair(request):
 
 #   get pair data
 @csrf_exempt
-def get_pair_by_id(request, pair_id):
+def get_pair_by_id(request):
     try:
+        pair_id = request.GET.get('id')
+        origin = request.META.get('HTTP_ORIGIN')
+        method = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
+        headers = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_HEADERS')
         pair = PairsList.objects.get(id=pair_id)
         # Perform any additional operations with the record if needed
         # ...

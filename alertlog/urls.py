@@ -29,6 +29,6 @@ urlpatterns = [
     path('check/', views.ProcessDataView.as_view()),   # message  check
     path('logupdate/',views.LogUpdateView.as_view(), name = "log -update"), # birncae loglary update etyan
     path('rolespost/',views.create_pair),
-    path('pair/<int:pair_id>/', views.get_pair_by_id),
+    path('pair/', views.get_pair_by_id),
    
 ]

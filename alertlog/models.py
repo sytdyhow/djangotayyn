@@ -12,7 +12,6 @@ class Logroles(models.Model):
     start_message = models.CharField(max_length = 10, default =None,blank =True , null=True)
     severity_out = models.CharField(max_length = 10, null =False)
     own_text = models.CharField(max_length = 150 , blank =True, null= True)
-    users = models.ManyToManyField(User)
     def __str__(self):
         return self.name
 

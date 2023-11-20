@@ -125,7 +125,7 @@ def postdata(hostname,severity,facility,application,message,timestamp,role, text
     usersss=[1,2]
     try:
     
-        url = "http://192.168.8.204:8088/logs"
+        url = "http://192.168.9.129:8088/logs"
         
         data = {
         "hostname": hostname,

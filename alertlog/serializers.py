@@ -61,7 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         #fields = '__all__'  
-        fields = ['username','is_active', 'date_joined']
+        fields = ['id','username','is_active', 'date_joined']
         
 ##############################
 
