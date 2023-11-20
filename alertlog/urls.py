@@ -30,5 +30,6 @@ urlpatterns = [
     path('logupdate/',views.LogUpdateView.as_view(), name = "log -update"), # birncae loglary update etyan
     path('rolespost/',views.create_pair),
     path('pair/', views.get_pair_by_id),
+    path('mytest/', views.mytest),
    
 ]

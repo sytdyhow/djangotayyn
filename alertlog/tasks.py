@@ -61,7 +61,8 @@ def process_row(row):
     )
     cursor_db2 = connection_db2.cursor()
 
-    print("my row  ", row)
+    print("my row  ", row[0])
+    role_id = row[0]
     role_name = row[1]
   
     description = row[2]
@@ -73,13 +74,18 @@ def process_row(row):
     severity_out = row[8]
     own_text = row[9]
 
-    delete_log = "SELECT id FROM table_kiber LIMIT 10"
+    delete_log = "SELECT id FROM table_kiber LIMIT 100"
     cursor_db1_1.execute(delete_log)
     logs_id = cursor_db1_1.fetchall()
     #print(type(logs_id), "id  =", logs_id)
+    rol_id= Logroles.objects.get(id = role_id).id
+    users_id = list(Baglansyk.objects.filter(logroles__id=rol_id).values_list("users", flat=True))
+
+
+
 
     if start_message:
-        #print("ookokk")
+
         cursor_db1.execute("SELECT id, hostname, severity, facility, application, message, timestamp FROM table_kiber WHERE severity = %s  AND application = %s AND  message LIKE %s AND message LIKE %s ", (severity_in, application_role, (description+"%"), ("" + start_message + "%")))
         filtered_data = cursor_db1.fetchall()
         print(" filterdata : ", filtered_data)
@@ -90,7 +96,7 @@ def process_row(row):
         print(" filterdata2 : ", filtered_data)
 
     # Verileri db2.filterlog tablosuna yazma
-    for filtered_row in filtered_data[:10]:
+    for filtered_row in filtered_data:
         id, hostname, severity, facility, application, message, timestamp = filtered_row
         my_message = " "
         if index_number:
@@ -103,7 +109,7 @@ def process_row(row):
         text_message = my_message + "   " + own_text
       
         
-        postdata(hostname, severity_out, facility, application, message, timestamp, role_name, text_message)
+        postdata(hostname, severity_out, facility, application, message, timestamp, role_name, text_message,users_id)
 
         print("yazgy gosuldy")
         connection_db2.commit()
@@ -120,9 +126,9 @@ def process_row(row):
     
     
     
-def postdata(hostname,severity,facility,application,message,timestamp,role, text_message):
+def postdata(hostname,severity,facility,application,message,timestamp,role, text_message,user_id):
     print("postdata, gecdi")
-    usersss=[1,2]
+    #usersss=[1,2]
     try:
     
         url = "http://192.168.9.129:8088/logs"
@@ -137,13 +143,13 @@ def postdata(hostname,severity,facility,application,message,timestamp,role, text
         "role": role,
         "is_know": False,
         "text_message":text_message,
-        "users":usersss
+        "users":user_id
         }
         
-        users = User.objects.filter(id__in=usersss).values('username')
+        users = User.objects.filter(id__in=user_id).values('username')
        
         for user in users:
-
+            print(user,"meni userim")
             user_data = {'type': 'chat_message', 'message': data, 'username': user['username'], 'room': user['username']}
 
             async_to_sync(channel_layer.group_send)('chat_'+user['username'], user_data) 
