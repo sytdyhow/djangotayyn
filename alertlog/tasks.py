@@ -16,13 +16,13 @@ channel_layer = get_channel_layer()
 @shared_task
 def get_joke():
     connection_db2 = mysql.connector.connect(
-        host="192.168.9.25",
-        user="alert",
-        password="P@ssword1234560",
+        host="192.168.8.204",
+        user="usermysql",
+        password="P@ssw0rd12345",
         database="Alertsystem"
     )
     cursor_db2 = connection_db2.cursor()
-    cursor_db2.execute("SELECT * FROM alertlog_roles")
+    cursor_db2.execute("SELECT * FROM alertlog_logroles")
     db2_data = cursor_db2.fetchall()
 
 
@@ -54,9 +54,9 @@ def process_row(row):
     cursor_db1_1 = connection_db1.cursor()
 
     connection_db2 = mysql.connector.connect(
-        host="192.168.9.25",
-        user="alert",
-        password="P@ssword1234560",
+        host="192.168.8.204",
+        user="usermysql",
+        password="P@ssw0rd12345",
         database="Alertsystem"
     )
     cursor_db2 = connection_db2.cursor()
@@ -80,12 +80,12 @@ def process_row(row):
 
     if start_message:
         #print("ookokk")
-        cursor_db1.execute("SELECT id, hostname, severity, facility, application, message, timestamp FROM table_kiber WHERE severity = %s  AND application = %s AND  message LIKE %s AND message LIKE %s LIMIT 10", (severity_in, application_role, (description+"%"), ("" + start_message + "%")))
+        cursor_db1.execute("SELECT id, hostname, severity, facility, application, message, timestamp FROM table_kiber WHERE severity = %s  AND application = %s AND  message LIKE %s AND message LIKE %s ", (severity_in, application_role, (description+"%"), ("" + start_message + "%")))
         filtered_data = cursor_db1.fetchall()
         print(" filterdata : ", filtered_data)
 
     else:
-        cursor_db1.execute("SELECT id, hostname, severity, facility, application, message, timestamp FROM table_kiber WHERE severity = %s  AND application = %s AND  message LIKE  %s LIMIT 10", (severity_in, application_role, description+"%"))
+        cursor_db1.execute("SELECT id, hostname, severity, facility, application, message, timestamp FROM table_kiber WHERE severity = %s  AND application = %s AND  message LIKE  %s ", (severity_in, application_role, description+"%"))
         filtered_data = cursor_db1.fetchall()
         print(" filterdata2 : ", filtered_data)
 
@@ -125,7 +125,7 @@ def postdata(hostname,severity,facility,application,message,timestamp,role, text
     usersss=[1,2]
     try:
     
-        url = "http://192.168.9.129:8088/logs"
+        url = "http://192.168.8.204:8088/logs"
         
         data = {
         "hostname": hostname,
@@ -165,13 +165,13 @@ def postdata(hostname,severity,facility,application,message,timestamp,role, text
 
 @shared_task
 def countdata():        
-        today = datetime.now().date()
+        today = datetime.datetime.now().date()
         last_month = today - timedelta(days=30)         
         today1 = date.today()
         start_of_week = today1 - timedelta(days=today1.weekday())
         end_of_week = start_of_week + timedelta(days=6)
-        start_of_day = datetime.combine(today, datetime.min.time())
-        end_of_day = datetime.combine(today, datetime.max.time())
+        start_of_day = datetime.datetime.combine(today, datetime.datetime.min.time())
+        end_of_day = datetime.datetime.combine(today, datetime.datetime.max.time())
         
         
         

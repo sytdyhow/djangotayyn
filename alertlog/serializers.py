@@ -103,7 +103,7 @@ class UserSerializer2(serializers.ModelSerializer):
 
         model = User
 
-        fields = ['username']
+        fields = ['id','username']
 
 
 class PairsListSerializer(serializers.ModelSerializer):
@@ -112,7 +112,7 @@ class PairsListSerializer(serializers.ModelSerializer):
 
         model = PairsList
 
-        fields = ['name']
+        fields = ['id','name']
 
 class PairsListSerializer2(serializers.ModelSerializer):
 
@@ -122,13 +122,19 @@ class PairsListSerializer2(serializers.ModelSerializer):
 
         fields = '__all__'
 
+class LogRoleSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = Logroles
+        fields = ['id','name']
+
 class BaglansykSerializer(serializers.ModelSerializer):
 
     pairname = PairsListSerializer()
 
     users = UserSerializer2()
 
-    logroles = serializers.StringRelatedField()
+    #logroles = serializers.StringRelatedField()
+    logroles = LogRoleSerializer2()
 
 
     class Meta:

@@ -379,8 +379,8 @@ class UserRegistrationView(viewsets.ModelViewSet):
         user.set_password(password)
         user.is_active = is_active
         user.save()
-        
-        room =Room.objects.create(name=username,slug =username).save()
+        usr_id = User.objects.get(id = user.id)
+        room =Room.objects.create(name=usr_id,slug =username).save()
         
         role = get_object_or_404(Rule, id=role_id)
 
