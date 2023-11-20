@@ -67,6 +67,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+
 class UserdataSerializer(serializers.ModelSerializer):
 
     role = serializers.SerializerMethodField()
@@ -93,4 +94,45 @@ class UserdataSerializer(serializers.ModelSerializer):
         systems = obj.userssystem_set.values_list('system_id__name', 'system_id__id')
 
         return list(systems)
-       
+
+
+############################################################################   users we logroles ucin   serializer ##############################################
+class UserSerializer2(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = User
+
+        fields = ['username']
+
+
+class PairsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = PairsList
+
+        fields = ['name']
+
+class PairsListSerializer2(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = PairsList
+
+        fields = '__all__'
+
+class BaglansykSerializer(serializers.ModelSerializer):
+
+    pairname = PairsListSerializer()
+
+    users = UserSerializer2()
+
+    logroles = serializers.StringRelatedField()
+
+
+    class Meta:
+
+        model = Baglansyk
+
+        fields = ['id', 'pairname', 'users', 'logroles']

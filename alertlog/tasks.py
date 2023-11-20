@@ -166,7 +166,6 @@ def postdata(hostname,severity,facility,application,message,timestamp,role, text
 @shared_task
 def countdata():        
         today = datetime.now().date()
-        today1 = date.today()
         last_month = today - timedelta(days=30)         
         today1 = date.today()
         start_of_week = today1 - timedelta(days=today1.weekday())
@@ -183,10 +182,10 @@ def countdata():
         error_month = alldatamonth.filter(severity__icontains='ERR').count()
         
         response_month= {
-        'total_month' : allcountmonth,
-        'warning_month': warning_month,
-        'info_month': info_month,
-        'error_month': error_month,           
+        'total' : allcountmonth,
+        'warning': warning_month,
+        'info': info_month,
+        'error': error_month,           
         }
          
             
@@ -200,10 +199,10 @@ def countdata():
         error_week = alldata_week.filter(severity__icontains='ERR').count()
         
         response_week = {
-        'total_week' : allcount_week,
-        'warning_week': warning_week,
-        'info_week': info_week,
-        'error_week': error_week,           
+        'total' : allcount_week,
+        'warning': warning_week,
+        'info': info_week,
+        'error': error_week,           
         }
         
         
@@ -219,15 +218,15 @@ def countdata():
         print(alldata_day)
         
         response_day = {
-        'total_day' : allcount_day,
-        'warning_day': warning_day,
-        'info_day': info_day,
-        'error_day': error_day,           
+        'total' : allcount_day,
+        'warning': warning_day,
+        'info': info_day,
+        'error': error_day,           
         }
         
 
         
-        async_to_sync(channel_layer.group_send)('countdata',{'type':'send_data','text':[response_day,response_week,response_month]})
+        async_to_sync(channel_layer.group_send)('countdata',{'type':'send_data','text':[{"day":response_day,"week":response_week, "month":response_month}]})
         
         
       

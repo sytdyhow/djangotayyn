@@ -1,21 +1,25 @@
+from datetime import date, timedelta,datetime
+
+from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from alertlog.models import Filterlog, Logroles,Systems,  Rule, UsersRole,UsersSystem, Room
+from alertlog.models import Baglansyk, Filterlog, Logroles,Systems,  Rule, UsersRole,UsersSystem, Room
 from alertlog.serializers import AllFilterLogSerializer, RoleSerializer, LogUpdateSerializer
 from rest_framework import status
 from django.db.models import Q
 from django.db import connection
-
+from rest_framework.parsers import JSONParser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .serializers import CustomTokenObtainPairSerializer, LogRoleSerializer ,SystemsSerializer, RoleSerializer,UserSerializer,UserdataSerializer
+from .serializers import * #CustomTokenObtainPairSerializer, LogRoleSerializer ,SystemsSerializer, RoleSerializer,UserSerializer,UserdataSerializer, baglansykSerializer
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
-
+from django.core.serializers import serialize
 class AllowPostOnly(permissions.IsAuthenticated):
     def has_permission(self, request, view):
         if request.method == 'POST':
@@ -119,85 +123,87 @@ class TodoListApiView(APIView):
 
 
 
-# class CountLogs(APIView):
-#     def get(self, request):
-        
-#         today = datetime.now().date()
-#         last_month = today - timedelta(days=30)
-#         last_week = today - timedelta(days=7)
-#         print(today)
-#         today1 = date.today()
-#         start_of_week = today1 - timedelta(days=today1.weekday())
-#         end_of_week = start_of_week + timedelta(days=6)
+class CountLogs(APIView):
+    def get(self, request):        
+        today = datetime.datetime.now().date()
+        today1 = date.today()
+        last_month = today - timedelta(days=30)         
+        today1 = date.today()
+        start_of_week = today1 - timedelta(days=today1.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+        start_of_day = datetime.datetime.combine(today, datetime.datetime.min.time())
+        end_of_day = datetime.datetime.combine(today, datetime.datetime.max.time())
         
       
         
-#         start_of_day = datetime.combine(today, datetime.min.time())
-#         end_of_day = datetime.combine(today, datetime.max.time())
+        start_of_day = datetime.datetime.combine(today, datetime.datetime.min.time())
+        end_of_day = datetime.datetime.combine(today, datetime.datetime.max.time())
         
-#         data = self.request.GET.get('date')
-#         if date == 'month':
-#             alldata = Filterlog.objects.all().filter(Q(timestamp__gte=last_month) & Q(timestamp__lte=today) & Q(is_know =False))
-#             allcount = alldata.count()
-#             warning_count = alldata.filter(severity__icontains='warning').count()
-#             info_count = alldata.filter(severity__icontains='info').count()
-#             error_count = alldata.filter(severity__icontains='ERR').count()
-            
-#             response_data = {
-#             'total' : allcount,
-#             'warning': warning_count,
-#             'info': info_count,
-#             'error': error_count,           
-#             }
-#             return Response(response_data)
-            
-#         if date == 'week':
-#             print("week gecdi")
-#             alldata = Filterlog.objects.filter(timestamp__date__range=[start_of_week, end_of_week]& Q(is_know =False))
-#             #alldata = Filterlog.objects.all().filter(Q(timestamp__gte=last_week) & Q(timestamp__lte=today))
-#             allcount = alldata.count()
-#             warning_count = alldata.filter(severity__icontains='warning').count()
-#             info_count = alldata.filter(severity__icontains='info').count()
-#             error_count = alldata.filter(severity__icontains='ERR').count()
-            
-#             response_data = {
-#             'total' : allcount,
-#             'warning': warning_count,
-#             'info': info_count,
-#             'error': error_count,           
-#             }
-#             return Response(response_data)
-            
+        data = self.request.GET.get('data')
+        print(data)
         
-#         if date == 'today':
+        if data == 'month':
+            alldatamonth = Filterlog.objects.all().filter(Q(timestamp__gte=last_month) & Q(timestamp__date__lte=today1) & Q(is_know =False))
+            allcountmonth = alldatamonth.count()
+            warning_month = alldatamonth.filter(severity__icontains='warning').count()
+            info_month = alldatamonth.filter(severity__icontains='info').count()
+            error_month = alldatamonth.filter(severity__icontains='ERR').count()
             
-#             alldata = Filterlog.objects.filter(timestamp__range=(start_of_day, end_of_day)& Q(is_know =False))
-#             #alldata = Filterlog.objects.all().filter(Q(timestamp__date=today))
-#             allcount = alldata.count()
-#             warning_count = alldata.filter(severity__icontains='warning').count()
-#             info_count = alldata.filter(severity__icontains='info').count()
-#             error_count = alldata.filter(severity__icontains='ERR').count()
-#             print(alldata)
-#             response_data = {
-#             'total' : allcount,
-#             'warning': warning_count,
-#             'info': info_count,
-#             'error': error_count,           
-#             }
-#             return Response(response_data)
+            response_month= {
+            'total' : allcountmonth,
+            'warning': warning_month,
+            'info': info_month,
+            'error': error_month,           
+            }
+            return Response(response_month)
+            
+        if data == 'week':
+            print("week gecdi")
+            alldata_week = Filterlog.objects.filter(Q(timestamp__date__range=(start_of_week, end_of_week)) & Q(is_know =False))
+            #alldata = Filterlog.objects.all().filter(Q(timestamp__gte=last_week) & Q(timestamp__lte=today))
+            allcount_week = alldata_week.count()
+            warning_week = alldata_week.filter(severity__icontains='warning').count()
+            info_week = alldata_week.filter(severity__icontains='info').count()
+            error_week = alldata_week.filter(severity__icontains='ERR').count()
+            
+            response_week = {
+            'total' : allcount_week,
+            'warning': warning_week,
+            'info': info_week,
+            'error': error_week,           
+            }
+            return Response(response_week)
         
-#             # queryset = YourModel.objects.filter(Q(created_at__gte=last_month) & Q(created_at__lte=today))
-#         allcount = Filterlog.objects.filter(is_know =False).all().count()
-#         warning_count = Filterlog.objects.filter(severity__icontains='warning').count()
-#         info_count = Filterlog.objects.filter(severity__icontains='info').count()
-#         error_count = Filterlog.objects.filter(severity__icontains='ERR').count()
-#         response_data = {
-#             'total' : allcount,
-#             'warning': warning_count,
-#             'info': info_count,
-#             'error': error_count,           
-#         }
-#         return Response(response_data)
+        if data == 'day':
+            
+            alldata_day = Filterlog.objects.filter(timestamp__range=(start_of_day, end_of_day),is_know =False)
+            #alldata = Filterlog.objects.all().filter(Q(timestamp__date=today))
+            allcount_day = alldata_day.count()
+            warning_day = alldata_day.filter(severity__icontains='warning').count()
+            info_day = alldata_day.filter(severity__icontains='info').count()
+            error_day = alldata_day.filter(severity__icontains='ERR').count()
+            print(alldata_day)
+            
+            response_day = {
+            'total' : allcount_day,
+            'warning': warning_day,
+            'info': info_day,
+            'error': error_day,           
+            }
+            return Response(response_day)
+        
+            # queryset = YourModel.objects.filter(Q(created_at__gte=last_month) & Q(created_at__lte=today))
+        allcount = Filterlog.objects.filter(is_know =False).all().count()
+        warning_count = Filterlog.objects.filter(severity__icontains='warning').count()
+        info_count = Filterlog.objects.filter(severity__icontains='info').count()
+        error_count = Filterlog.objects.filter(severity__icontains='ERR').count()
+        response_data = {
+            'total' : allcount,
+            'warning': warning_count,
+            'info': info_count,
+            'error': error_count,           
+        }
+        return Response(response_data)
 
 class FilterLogsViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -474,3 +480,59 @@ class UserdataRegistrationView(viewsets.ModelViewSet):
     queryset = User.objects.all()
 
     serializer_class = UserdataSerializer
+    
+    
+class BaglansykView(viewsets.ModelViewSet):
+
+    queryset = Baglansyk.objects.all()
+
+    serializer_class = BaglansykSerializer
+    
+ 
+ #    pair we user log rules  post
+@csrf_exempt
+def create_pair(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        pairname = data.get('pairname')
+        user_ids = data.get('users')  # Assuming you receive a list of user IDs
+        logroles = data.get('logroles')
+        # Create a new pair
+        new_pair = PairsList(name=pairname)
+        new_pair.save()
+        pair_id = PairsList.objects.get(id = new_pair.id)
+        # Create new users and logroles for the pair
+        for user_id in user_ids:
+            user = User.objects.get(id=user_id)  # Retrieve the actual User instance
+            for logrole in logroles:
+                logrol = Logroles.objects.get(id = logrole)
+                new_user = Baglansyk(users=user, pairname=pair_id, logroles=logrol)
+                new_user.save()
+
+        return JsonResponse({"status": "success", "pairname": pairname})
+
+
+#   get pair data
+@csrf_exempt
+def get_pair_by_id(request, pair_id):
+    try:
+        pair = PairsList.objects.get(id=pair_id)
+        # Perform any additional operations with the record if needed
+        # ...
+        data = Baglansyk.objects.filter(pairname = pair)
+        # Return the record as JSON response
+        data_serializers = BaglansykSerializer(data=data, many= True)
+        data_serializers.is_valid()
+        return JsonResponse({'data': data_serializers.data})
+    except Baglansyk.DoesNotExist:
+        return JsonResponse({'error': 'Record not found'}, status=404)
+    
+
+
+class Pairlist(ModelViewSet):
+    queryset = PairsList.objects.all()
+    serializer_class = PairsListSerializer2
+    
+     
+
+    

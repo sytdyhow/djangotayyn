@@ -17,3 +17,5 @@ admin.site.register(Profile)
 admin.site.register(Userperimision)
 
 admin.site.register(Room)
+admin.site.register(Baglansyk)
+admin.site.register(PairsList)
